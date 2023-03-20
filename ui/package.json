@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "prepare": "cd .. && husky install",
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",
@@ -55,7 +54,6 @@
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.31.10",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
     "postcss-less": "^6.0.0",
     "prettier": "^2.7.1",
@@ -71,7 +69,7 @@
     "typescript": "^4.8.4",
     "typescript-plugin-css-modules": "^3.4.0",
     "web-vitals": "^2.1.4",
-    "webpack": "^5.74.0",
+    "webpack": "^5.76.0",
     "webpackbar": "^5.0.2"
   },
   "browserslist": {
