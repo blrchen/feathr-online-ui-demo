@@ -1,4 +1,4 @@
-name: Publish blrchen/gptlite
+name: Publish blrchen/blrchen
 
 on:
   workflow_dispatch:
@@ -19,7 +19,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: blrchen/feathr-online-ui-demo
+          images: blrchen/blrchen
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
