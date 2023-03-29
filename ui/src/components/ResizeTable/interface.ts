@@ -1,12 +1,11 @@
-// import { TableProps } from 'antd'
-import type { ColumnType, TableProps } from 'antd/es/table'
-import { ResizeHandle, ResizableProps } from 'react-resizable'
+import type { TableColumnType, TableProps } from 'antd'
+import { ResizableProps, ResizeHandle } from 'react-resizable'
 
 export interface ResizeTableProps<T> extends Omit<TableProps<T>, 'columns'> {
   columns?: ResizeColumnType<T>[]
 }
 
-export interface ResizeColumnType<T> extends ColumnType<T> {
+export interface ResizeColumnType<T> extends TableColumnType<T> {
   resize?: boolean
   minWidth?: number
 }

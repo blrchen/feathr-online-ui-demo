@@ -4,20 +4,15 @@ import type { RouteObject } from 'react-router-dom'
 
 import Loading from '@/components/Loading'
 import AppLayout from '@/layouts/AppLayout'
+import Aggregation from '@/pages/Aggregation'
+import LocalCompute from '@/pages/LocalCompute'
+import LookupOnlineStore from '@/pages/LookupOnlineStore'
+import ModelService from '@/pages/ModelService'
+import MovieDetails from '@/pages/ModelService/components/MovieDetails'
 
 const Home = lazy(() => import('@/pages/Home'))
 
-const NYCTaxi = lazy(() => import('@/pages/NYCTaxi'))
-
-const Geo = lazy(() => import('@/pages/Geo'))
-
-const List = lazy(() => import('@/pages/List'))
-
-const Form = lazy(() => import('@/pages/Form'))
-
-const Detail = lazy(() => import('@/pages/Detail'))
-
-const Page403 = lazy(() => import('@/pages/403'))
+const InvokeExternalApi = lazy(() => import('src/pages/ExternalApi'))
 
 const Page404 = lazy(() => import('@/pages/404'))
 
@@ -37,29 +32,30 @@ export const routers: RouteObject[] = [
       },
       {
         index: true,
-        path: '/nyctaxi',
-        element: lazyLoad(<NYCTaxi />)
+        path: '/lookup-online-store',
+        element: lazyLoad(<LookupOnlineStore />)
       },
       {
         index: true,
-        path: '/geo',
-        element: lazyLoad(<Geo />)
+        path: '/local-compute',
+        element: lazyLoad(<LocalCompute />)
       },
       {
-        path: '/list',
-        element: lazyLoad(<List />)
+        index: true,
+        path: '/invoke-external-api',
+        element: lazyLoad(<InvokeExternalApi />)
       },
       {
-        path: '/form',
-        element: lazyLoad(<Form />)
+        path: '/aggregation',
+        element: lazyLoad(<Aggregation />)
       },
       {
-        path: '/detail',
-        element: lazyLoad(<Detail />)
+        path: '/model-service',
+        element: lazyLoad(<ModelService />)
       },
       {
-        path: '/403',
-        element: lazyLoad(<Page403 />)
+        path: '/movie-details/:id',
+        element: lazyLoad(<MovieDetails />)
       },
       {
         path: '/404',

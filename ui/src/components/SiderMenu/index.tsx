@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-import { HomeOutlined, CarOutlined, EnvironmentOutlined } from '@ant-design/icons'
+import { EnvironmentOutlined, HomeOutlined } from '@ant-design/icons'
 import { Layout, Menu } from 'antd'
 import { Link, useLocation } from 'react-router-dom'
 
@@ -20,14 +20,29 @@ const menuItems = [
     label: <Link to="/">Home</Link>
   },
   {
-    key: '/geo',
+    key: '/lookup-online-store',
     icon: <EnvironmentOutlined />,
-    label: <Link to="/Geo">Geo</Link>
+    label: <Link to="/lookup-online-store">Lookup Online Store</Link>
   },
   {
-    key: '/nyctaxi',
-    icon: <CarOutlined />,
-    label: <Link to="/nyctaxi">NYCTaxi</Link>
+    key: '/local-compute',
+    icon: <EnvironmentOutlined />,
+    label: <Link to="/local-compute">Local Compute</Link>
+  },
+  {
+    key: '/invoke-external-api',
+    icon: <EnvironmentOutlined />,
+    label: <Link to="/invoke-external-api">Invoke External API</Link>
+  },
+  {
+    key: '/aggregation',
+    icon: <EnvironmentOutlined />,
+    label: <Link to="/aggregation">Aggregation</Link>
+  },
+  {
+    key: '/model-service',
+    icon: <EnvironmentOutlined />,
+    label: <Link to="/model-service">Model Service</Link>
   }
 ]
 
@@ -43,7 +58,7 @@ const getMenuKey = (pathname: string) => {
 function SiderMenu(props: SiderMenuProps) {
   const { siderWidth, collapsedWidth } = { ...defaultProps, ...props }
   const [collapsed, setCollapsed] = useState<boolean>(true)
-
+  const [transition, setTransition] = useState<string>('none')
   const location = useLocation()
 
   const [current, setcurrent] = useState<string>(getMenuKey(location.pathname))
@@ -51,6 +66,10 @@ function SiderMenu(props: SiderMenuProps) {
   useEffect(() => {
     setcurrent(getMenuKey(location.pathname))
   }, [location.pathname])
+
+  useEffect(() => {
+    setTransition('all 0.2s ease 0s')
+  }, [])
 
   return (
     <>
@@ -61,7 +80,7 @@ function SiderMenu(props: SiderMenuProps) {
           flex: `0 0 ${collapsed ? collapsedWidth : siderWidth}px`,
           maxWidth: collapsed ? collapsedWidth : siderWidth,
           minWidth: collapsed ? collapsedWidth : siderWidth,
-          transition: 'all 0.2s ease 0s'
+          transition
         }}
       />
       <Sider
