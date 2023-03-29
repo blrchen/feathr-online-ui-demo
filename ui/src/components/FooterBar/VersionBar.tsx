@@ -14,8 +14,8 @@ const VersionBar = (props: VersionBarProps) => {
 
   return (
     <Space className={className} size={[46, 0]}>
-      <span>UI Version: {config.VERSION}</span>
-      <span>UI Build Generated at {generatedTime}</span>
+      <span>Version: {config.VERSION}</span>
+      <span>Generated at {generatedTime}</span>
     </Space>
   )
 }

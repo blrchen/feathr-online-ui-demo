@@ -2,7 +2,7 @@ import { useContext } from 'react'
 
 import { observer } from 'mobx-react'
 
-import { storesContext } from '../store'
+import { storesContext } from '@/store'
 
 export { observer }
 
