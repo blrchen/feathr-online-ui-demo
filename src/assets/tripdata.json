@@ -1,0 +1,47 @@
+[
+  {
+    "id": 0,
+    "pickUpTime": "2020/4/1 0:44",
+    "dropOffTime": "2020/4/1 0:52",
+    "puId": 42,
+    "doId": 41,
+    "distance": 1.68,
+    "fareAmount": 8
+  },
+  {
+    "id": 1,
+    "pickUpTime": "2020/4/1 0:24",
+    "dropOffTime": "2020/4/1 0:33",
+    "puId": 244,
+    "doId": 247,
+    "distance": 1.94,
+    "fareAmount": 9
+  },
+  {
+    "id": 2,
+    "pickUpTime": "2020/4/1 0:45",
+    "dropOffTime": "2020/4/1 0:51",
+    "puId": 244,
+    "doId": 243,
+    "distance": 1,
+    "fareAmount": 6.5
+  },
+  {
+    "id": 3,
+    "pickUpTime": "2020/4/1 0:45",
+    "dropOffTime": "2020/4/1 1:04",
+    "puId": 244,
+    "doId": 243,
+    "distance": 2.81,
+    "fareAmount": 12
+  },
+  {
+    "id": 4,
+    "pickUpTime": "2020/4/1 0:00",
+    "dropOffTime": "2020/4/1 0:16",
+    "puId": 75,
+    "doId": 169,
+    "distance": 6.79,
+    "fareAmount": 21
+  }
+]
