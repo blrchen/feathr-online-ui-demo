@@ -1,6 +1,6 @@
 import { Message } from '@/models'
 import { createParser, ParsedEvent, ReconnectInterval } from 'eventsource-parser'
-
+import { getFeathrDSL, processQuestion } from "@/utils/prompts";
 export const config = {
   runtime: 'edge'
 }
@@ -74,8 +74,9 @@ const OpenAIStream = async (apiUrl: string, apiKey: string, model: string, messa
       max_tokens: 4000,
       messages: [
         {
-          role: 'system',
-          content: `You are an AI assistant that helps people find information.`
+          role: "system",
+          content: "I am going to teach you a DSL, could you learn it? \n Feathr DSL: \n" +
+          getFeathrDSL(),
         },
         ...messages
       ],

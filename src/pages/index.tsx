@@ -1,22 +1,17 @@
-import ChatGPT from '@/components/ChatGPT'
-import { Layout } from 'antd'
-import { Content } from 'antd/lib/layout/layout'
+import App from '@/static/App'
+import { useEffect, useRef, useState } from 'react'
 
-import FooterBar from '@/components/FooterBar'
-import HeaderBar from '@/components/HeaderBar'
-
-import styles from './index.module.less'
+import { BrowserRouter as Router } from 'react-router-dom'
 
 export default function Home() {
-  return (
-    <Layout hasSider className={styles.layout}>
-      <Layout>
-        <HeaderBar />
-        <Content className={styles.main}>
-           <ChatGPT fetchPath="/api/chat-completion" />
-        </Content>
-        <FooterBar />
-      </Layout>
-    </Layout>
-  )
+  const [content, setContent] = useState<any>(null)
+  useEffect(() => {
+    setContent(
+      <Router>
+        <App />
+      </Router>
+    )
+  }, [])
+
+  return <>{content}</>
 }
