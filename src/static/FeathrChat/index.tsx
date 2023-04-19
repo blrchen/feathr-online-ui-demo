@@ -82,7 +82,7 @@ const LocalCompute = () => {
   }, [chatGPTVersion])
 
   return (
-    <PagePanel title="Feathr Chart">
+    <PagePanel title="Feathr Chat">
       <ChatGPT
         ref={chatRef}
         fetchPath="/api/chat-completion"
