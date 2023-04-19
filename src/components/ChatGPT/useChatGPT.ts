@@ -1,9 +1,9 @@
-import { useEffect, useReducer, useRef, useState } from 'react'
+import { useEffect, useImperativeHandle, useReducer, useRef, useState } from 'react'
 
 import ClipboardJS from 'clipboard'
 import { throttle } from 'lodash-es'
 
-import { ChatGPTProps, ChatMessage, ChatRole } from './interface'
+import { ChatGPTProps, ChatMessage, ChatRole, Prompt } from './interface'
 
 const scrollDown = throttle(
   () => {
@@ -41,8 +41,10 @@ const requestMessage = async (
   return data.getReader()
 }
 
-export const useChatGPT = (props: ChatGPTProps) => {
-  const { fetchPath } = props
+export const useChatGPT = (props: ChatGPTProps, ref: any) => {
+  const inputRef = useRef<HTMLTextAreaElement>(null)
+
+  const { prompts = [], version, fetchPath, onSettings, onChangeVersion } = props
   const [, forceUpdate] = useReducer((x) => !x, false)
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [disabled] = useState<boolean>(false)
@@ -124,13 +126,31 @@ export const useChatGPT = (props: ChatGPTProps) => {
     new ClipboardJS('.chat-wrapper .copy-btn')
   }, [])
 
+  useImperativeHandle(
+    ref,
+    () => {
+      return {
+        setChatContent: (prompt: Prompt) => {
+          inputRef.current!.value = prompt.content!
+          inputRef.current!.style.height = 'auto'
+        }
+      }
+    },
+    []
+  )
+
   return {
     loading,
     disabled,
     messages,
     currentMessage,
+    prompts,
+    version,
+    inputRef,
+    onChangeVersion,
     onSend,
     onClear,
-    onStop
+    onStop,
+    onSettings
   }
 }
