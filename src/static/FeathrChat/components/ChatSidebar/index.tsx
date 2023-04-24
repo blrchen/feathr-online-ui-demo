@@ -7,8 +7,7 @@ import {
   CloseCircleOutlined,
   DeleteOutlined,
   FormOutlined,
-  PlusCircleOutlined,
-  SettingOutlined
+  PlusCircleOutlined
 } from '@ant-design/icons'
 
 import styles from './index.module.less'
@@ -21,7 +20,7 @@ const DefaultPersona = {
   prompt: 'I am going to teach you a DSL, could you learn it? \n Feathr DSL: \n'
 }
 const { Panel } = Collapse
-const { Link, Title } = Typography
+const { Link } = Typography
 
 const ChatSidebar = (props: ChatSidebarProps) => {
   const { currentChatId, chatList, onChangeChat, onCloseChat, onSettings, onNewChat } = props
@@ -54,7 +53,7 @@ const ChatSidebar = (props: ChatSidebarProps) => {
     setShowModal(false)
   }
 
-  const onNewPersona = (e) => {
+  const onNewPersona = (e: React.MouseEvent) => {
     e.stopPropagation()
     onShowPersonaModal(undefined, -1)
   }
@@ -98,7 +97,7 @@ const ChatSidebar = (props: ChatSidebarProps) => {
                   <>
                     <span>{item.persona?.name}</span>
                     <div
-                      className='close-button'
+                      className="close-button"
                       onClick={(e) => {
                         e.stopPropagation()
                       }}
@@ -136,9 +135,9 @@ const ChatSidebar = (props: ChatSidebarProps) => {
             header="Persona List"
             key="1"
             extra={
-              <a onClick={onNewPersona}>
+              <Link onClick={onNewPersona}>
                 <PlusCircleOutlined />
-              </a>
+              </Link>
             }
           >
             <List
@@ -151,26 +150,30 @@ const ChatSidebar = (props: ChatSidebarProps) => {
                   onClick={() => {
                     onNewChat?.(item)
                   }}
-                  actions={[
-                    <Link
-                      key="eidt"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        onShowPersonaModal(item, index)
-                      }}
-                    >
-                      <FormOutlined />
-                    </Link>,
-                    <Link
-                      key="delete"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        onDeletePersona(index)
-                      }}
-                    >
-                      <DeleteOutlined />
-                    </Link>
-                  ]}
+                  actions={
+                    index !== 0
+                      ? [
+                          <Link
+                            key="eidt"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              onShowPersonaModal(item, index)
+                            }}
+                          >
+                            <FormOutlined />
+                          </Link>,
+                          <Link
+                            key="delete"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              onDeletePersona(index)
+                            }}
+                          >
+                            <DeleteOutlined />
+                          </Link>
+                        ]
+                      : []
+                  }
                 >
                   <List.Item.Meta title={item.name} />
                 </List.Item>
