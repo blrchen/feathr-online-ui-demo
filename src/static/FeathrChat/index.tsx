@@ -1,29 +1,31 @@
-import React, { use, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import { Divider, Drawer, Select, Space, Typography } from 'antd'
 
 import ChatGPT from '@/components/ChatGPT'
-import { ChatGPTVersion, Prompt } from '@/components/ChatGPT/interface'
-import PagePanel from '@/components/PagePanel'
+import {
+  ChatGPInstance,
+  ChatGPTVersion,
+  ChatMessage,
+  ChatRole
+} from '@/components/ChatGPT/interface'
 import { observer } from '@/hooks'
-import { Divider, Drawer, List, Select, Space, Typography } from 'antd'
-import PromptModal from './components/PropmtModal'
-import { DeleteOutlined, FormOutlined, PlusOutlined } from '@ant-design/icons'
 
-const { Text, Link } = Typography
+import ChatSidebar from './components/ChatSidebar'
+import { Chat, Persona } from './components/ChatSidebar/interface'
+
+import styles from './index.module.less'
+
+const { Text } = Typography
 
 const LocalCompute = () => {
-  const chatRef = useRef<any>(null)
-  const currentPromptIndex = useRef<number>(-1)
-  const currentPrompt = useRef<Prompt>({})
+  const chatRef = useRef<ChatGPInstance>(null)
+  const messagesMap = useRef<WeakMap<Persona, ChatMessage[]>>(new WeakMap<Persona, ChatMessage[]>())
 
-  const [open, setOpen] = useState(false)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-
-  const [prompts, setPrompts] = useState<Prompt[]>([])
+  const [chatList, setChatList] = useState<Chat[]>([])
+  const [prompts, setPrompts] = useState<ChatMessage[]>([])
+  const [currentChat, setCurrentChat] = useState<Chat | null>()
   const [chatGPTVersion, setChatGPTVersion] = useState<ChatGPTVersion>(ChatGPTVersion.GPT_35_turbo)
-
-  const onChangeVersion = (version: ChatGPTVersion) => {
-    setChatGPTVersion(version)
-  }
+  const [open, setOpen] = useState(false)
 
   const showDrawer = () => {
     setOpen(true)
@@ -33,64 +35,86 @@ const LocalCompute = () => {
     setOpen(false)
   }
 
-  const onShowModal = (prompt: Prompt, index: number) => {
-    currentPrompt.current = { ...prompt }
-    currentPromptIndex.current = index
-    setIsModalOpen(true)
+  const saveMessages = () => {
+    if (currentChat) {
+      messagesMap.current.set(currentChat.persona!, chatRef.current?.getMessages() || [])
+    }
   }
 
-  const onAddPrompt = () => {
-    onShowModal({}, -1)
-  }
-
-  const onPromptDelete = (index: number) => {
-    setPrompts((state) => {
-      state.splice(index, 1)
-      return [...state]
+  const onNewChat = (persona: Persona) => {
+    const id = `chat_id_${Date.now()}`
+    const messages: ChatMessage[] = []
+    const newChat: Chat = {
+      id,
+      persona: persona
+    }
+    messagesMap.current.set(persona, messages)
+    chatRef.current?.setMessages(messages)
+    saveMessages()
+    setPrompts([{ content: persona.prompt || '', role: persona.role! }])
+    setCurrentChat(newChat)
+    setChatList((state) => {
+      return [...state, newChat]
     })
   }
 
-  const onModalSubmit = (prompt: Prompt) => {
-    setPrompts((state) => {
-      if (currentPromptIndex.current === -1) {
-        state.push(prompt)
-      } else {
-        state.splice(currentPromptIndex.current, 1, prompt)
-      }
-      return [...state]
-    })
-
-    setIsModalOpen(false)
+  const onCloseChat = (chat: Chat) => {
+    const index = chatList.findIndex((item) => item.id === chat.id)
+    messagesMap.current.delete(chat.persona!)
+    chatList.splice(index, 1)
+    setChatList([...chatList])
+    if (chatList.length && chat.id === currentChat?.id) {
+      onChangeChat(chatList[0])
+    }
   }
 
-  const onModalCancel = () => {
-    setIsModalOpen(false)
+  const onChangeChat = (chat?: Chat) => {
+    saveMessages()
+    if (chat) {
+      setPrompts([{ content: chat.persona?.prompt || '', role: chat.persona?.role! }])
+      setCurrentChat(chat)
+      const messages = messagesMap.current.get(chat.persona!)
+      chatRef.current?.setMessages(messages || [])
+    }
+  }
+
+  const onChangeVersion = (version: ChatGPTVersion) => {
+    setChatGPTVersion(version)
   }
 
   useEffect(() => {
-    setPrompts(JSON.parse(localStorage.getItem('prompts') || '[]') as Prompt[])
     const version = localStorage.getItem('chatGPTVersion') as ChatGPTVersion
     setChatGPTVersion(version || ChatGPTVersion.GPT_35_turbo)
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.removeAttribute('style')
+    }
   }, [])
-
-  useEffect(() => {
-    localStorage.setItem('prompts', JSON.stringify(prompts))
-  }, [prompts])
 
   useEffect(() => {
     localStorage.setItem('chatGPTVersion', chatGPTVersion)
   }, [chatGPTVersion])
 
   return (
-    <PagePanel title="Feathr Chat">
-      <ChatGPT
-        ref={chatRef}
-        fetchPath="/api/chat-completion"
-        prompts={prompts}
-        version={chatGPTVersion}
-        onChangeVersion={onChangeVersion}
-        onSettings={showDrawer}
-      />
+    <>
+      <div className={styles.chatWrapper}>
+        <ChatSidebar
+          chatList={chatList}
+          currentChatId={currentChat?.id}
+          onNewChat={onNewChat}
+          onCloseChat={onCloseChat}
+          onChangeChat={onChangeChat}
+        />
+        <ChatGPT
+          header={<div className={styles.chatHeader}>{currentChat?.persona?.name}</div>}
+          ref={chatRef}
+          fetchPath="/api/chat-completion"
+          prompts={prompts}
+          config={{ model: chatGPTVersion, stream: true }}
+          onChangeVersion={onChangeVersion}
+          onSettings={showDrawer}
+        />
+      </div>
       <Drawer
         title="Chat Settings"
         placement="right"
@@ -114,56 +138,8 @@ const LocalCompute = () => {
           />
         </Space>
         <Divider />
-
-        <List
-          header={
-            <Space style={{ width: '100%', justifyContent: 'space-between' }}>
-              <Text >Prompts</Text>
-              <Link onClick={onAddPrompt} style={{ marginRight: 8 }}>
-                <PlusOutlined />
-              </Link>
-            </Space>
-          }
-          itemLayout="horizontal"
-          dataSource={prompts}
-          renderItem={(item, index) => (
-            <List.Item
-              onClick={() => {
-                chatRef.current?.setChatContent(item)
-              }}
-              actions={[
-                <Link
-                  key="eidt"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onShowModal(item, index)
-                  }}
-                >
-                  <FormOutlined />
-                </Link>,
-                <Link
-                  key="delete"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onPromptDelete(index)
-                  }}
-                >
-                  <DeleteOutlined />
-                </Link>
-              ]}
-            >
-              <List.Item.Meta title={item.title} description={item.content} />
-            </List.Item>
-          )}
-        />
       </Drawer>
-      <PromptModal
-        show={isModalOpen}
-        data={currentPrompt.current}
-        onCancel={onModalCancel}
-        onSubmit={onModalSubmit}
-      />
-    </PagePanel>
+    </>
   )
 }
 

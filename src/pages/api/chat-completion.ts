@@ -1,14 +1,17 @@
-import { Message } from '@/models'
+import { ChatConfig, Message } from '@/models'
 import { createParser, ParsedEvent, ReconnectInterval } from 'eventsource-parser'
-import { getFeathrDSL, processQuestion } from "@/utils/prompts";
+import { getFeathrDSL, processQuestion } from '@/utils/prompts'
+import { NextApiResponse } from 'next'
 export const config = {
   runtime: 'edge'
 }
 
-const handler = async (req: Request): Promise<Response> => {
+const handler = async (req: Request, res: NextApiResponse): Promise<Response> => {
   try {
-    const { messages } = (await req.json()) as {
+    const { messages, prompts, config } = (await req.json()) as {
       messages: Message[]
+      prompts: Message[]
+      config: ChatConfig
     }
 
     const charLimit = 12000
@@ -34,31 +37,42 @@ const handler = async (req: Request): Promise<Response> => {
       let apiBaseUrl = process.env.AZURE_OPENAI_API_BASE_URL
       const version = '2023-03-15-preview'
       const deployment = process.env.AZURE_OPENAI_DEPLOYMENT || ''
-      if (apiBaseUrl && apiBaseUrl.endsWith("/")) {
-        apiBaseUrl = apiBaseUrl.slice(0, -1);
+      if (apiBaseUrl && apiBaseUrl.endsWith('/')) {
+        apiBaseUrl = apiBaseUrl.slice(0, -1)
       }
       apiUrl = `${apiBaseUrl}/openai/deployments/${deployment}/chat/completions?api-version=${version}`
       apiKey = process.env.AZURE_OPENAI_API_KEY || ''
       model = '' // Azure Open AI always ignores the model and decides based on the deployment name passed through.
     } else {
       let apiBaseUrl = process.env.OPENAI_API_BASE_URL || 'https://api.openai.com'
-      if (apiBaseUrl && apiBaseUrl.endsWith("/")) {
-        apiBaseUrl = apiBaseUrl.slice(0, -1);
+      if (apiBaseUrl && apiBaseUrl.endsWith('/')) {
+        apiBaseUrl = apiBaseUrl.slice(0, -1)
       }
       apiUrl = `${apiBaseUrl}/v1/chat/completions`
       apiKey = process.env.OPENAI_API_KEY || ''
-      model = 'gpt-3.5-turbo' // todo: allow this to be passed through from client and support gpt-4
+      model = config.model || 'gpt-3.5-turbo' // todo: allow this to be passed through from client and support gpt-4
     }
-    const stream = await OpenAIStream(apiUrl, apiKey, model, messagesToSend)
-
-    return new Response(stream)
+    if (config.stream === false) {
+      const data = await OpenAI(apiUrl, apiKey, model, messagesToSend, prompts, config)
+      return new Response(JSON.stringify(data))
+    } else {
+      const stream = await OpenAIStream(apiUrl, apiKey, model, messagesToSend, prompts, config)
+      return new Response(stream)
+    }
   } catch (error) {
     console.error(error)
     return new Response('Error', { status: 500 })
   }
 }
 
-const OpenAIStream = async (apiUrl: string, apiKey: string, model: string, messages: Message[]) => {
+const OpenAIStream = async (
+  apiUrl: string,
+  apiKey: string,
+  model: string,
+  messages: Message[],
+  prompts: Message[],
+  config: ChatConfig
+) => {
   const encoder = new TextEncoder()
   const decoder = new TextDecoder()
   const res = await fetch(apiUrl, {
@@ -72,16 +86,9 @@ const OpenAIStream = async (apiUrl: string, apiKey: string, model: string, messa
       model: model,
       frequency_penalty: 0,
       max_tokens: 4000,
-      messages: [
-        {
-          role: "system",
-          content: "I am going to teach you a DSL, could you learn it? \n Feathr DSL: \n" +
-          getFeathrDSL(),
-        },
-        ...messages
-      ],
+      messages: [...prompts, ...messages],
       presence_penalty: 0,
-      stream: true,
+      stream: config.stream === undefined ? true : config.stream,
       temperature: 0.7,
       top_p: 0.95
     })
@@ -124,5 +131,38 @@ const OpenAIStream = async (apiUrl: string, apiKey: string, model: string, messa
       }
     }
   })
+}
+
+const OpenAI = async (
+  apiUrl: string,
+  apiKey: string,
+  model: string,
+  messages: Message[],
+  prompts: Message[],
+  config: ChatConfig
+) => {
+  const res = await fetch(apiUrl, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+      'api-key': `${apiKey}`
+    },
+    method: 'POST',
+    body: JSON.stringify({
+      model: model,
+      frequency_penalty: 0,
+      max_tokens: 4000,
+      messages: [...prompts, ...messages],
+      presence_penalty: 0,
+      stream: false,
+      temperature: 0.7,
+      top_p: 0.95
+    })
+  })
+  const json = await res.json()
+  return {
+    message: json.choices[0].message.content,
+    usage: json.usage
+  }
 }
 export default handler

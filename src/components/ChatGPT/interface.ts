@@ -17,9 +17,10 @@ export interface Prompt {
 }
 
 export interface ChatGPTProps {
+  header?: ReactNode
   fetchPath: string
-  version: ChatGPTVersion
-  prompts?: Prompt[]
+  config?: ChatConfig
+  prompts?: ChatMessage[]
   onSettings?: () => void
   onChangeVersion?: (version: ChatGPTVersion) => void
 }
@@ -47,4 +48,17 @@ export interface ShowProps {
   loading?: boolean
   fallback?: ReactNode
   children?: ReactNode
+}
+
+export interface ChatGPInstance {
+  setPrompt: (prompt: ChatMessage) => void
+  setChatContent: (prompt: Prompt) => void
+  setMessages: (messages: ChatMessage[]) => void
+  getMessages: () => ChatMessage[]
+  scrollDown: () => void
+}
+
+export interface ChatConfig {
+  model?: ChatGPTVersion
+  stream?: boolean
 }

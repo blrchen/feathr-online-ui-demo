@@ -3,11 +3,14 @@ import { useEffect, useImperativeHandle, useReducer, useRef, useState } from 're
 import ClipboardJS from 'clipboard'
 import { throttle } from 'lodash-es'
 
-import { ChatGPTProps, ChatMessage, ChatRole, Prompt } from './interface'
+import { ChatConfig, ChatGPTProps, ChatMessage, ChatRole, Prompt } from './interface'
 
 const scrollDown = throttle(
   () => {
-    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
+    const messageList = document.querySelector('.message-list')
+    setTimeout(() => {
+      messageList?.scrollTo({ top: messageList.scrollHeight, behavior: 'smooth' })
+    }, 0)
   },
   300,
   {
@@ -19,15 +22,22 @@ const scrollDown = throttle(
 const requestMessage = async (
   url: string,
   messages: ChatMessage[],
-  controller: AbortController | null
+  prompts: ChatMessage[],
+  controller: AbortController | null,
+  config: ChatConfig
 ) => {
   const response = await fetch(url, {
     method: 'POST',
     body: JSON.stringify({
-      messages
+      messages,
+      prompts,
+      config
     }),
     signal: controller?.signal
   })
+  if (config.stream === false) {
+    return response
+  }
 
   if (!response.ok) {
     throw new Error(response.statusText)
@@ -44,8 +54,9 @@ const requestMessage = async (
 export const useChatGPT = (props: ChatGPTProps, ref: any) => {
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
-  const { prompts = [], version, fetchPath, onSettings, onChangeVersion } = props
+  const { prompts = [], config = {}, fetchPath, onSettings, onChangeVersion } = props
   const [, forceUpdate] = useReducer((x) => !x, false)
+  const allMessagesRef = useRef<ChatMessage[]>([])
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [disabled] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
@@ -53,8 +64,8 @@ export const useChatGPT = (props: ChatGPTProps, ref: any) => {
   const controller = useRef<AbortController | null>(null)
   const currentMessage = useRef<string>('')
 
-  const archiveCurrentMessage = () => {
-    const content = currentMessage.current
+  const archiveCurrentMessage = (message?: string) => {
+    const content = message || currentMessage.current
     currentMessage.current = ''
     setLoading(false)
     if (content) {
@@ -77,27 +88,44 @@ export const useChatGPT = (props: ChatGPTProps, ref: any) => {
       controller.current = new AbortController()
       setLoading(true)
 
-      const reader = await requestMessage(fetchPath, messages, controller.current)
-      const decoder = new TextDecoder('utf-8')
-      let done = false
+      if (config.stream === false) {
+        const data = (await requestMessage(
+          fetchPath,
+          messages,
+          prompts,
+          controller.current,
+          config
+        )) as Response
+        const json = await data.json()
+        archiveCurrentMessage(json.message)
+      } else {
+        const reader = (await requestMessage(
+          fetchPath,
+          messages,
+          prompts,
+          controller.current,
+          config
+        )) as ReadableStreamDefaultReader<Uint8Array>
+        const decoder = new TextDecoder('utf-8')
+        let done = false
 
-      while (!done) {
-        const { value, done: readerDone } = await reader.read()
-        if (value) {
-          const char = decoder.decode(value)
-          if (char === '\n' && currentMessage.current.endsWith('\n')) {
-            continue
+        while (!done) {
+          const { value, done: readerDone } = await reader.read()
+          if (value) {
+            const char = decoder.decode(value)
+            if (char === '\n' && currentMessage.current.endsWith('\n')) {
+              continue
+            }
+            if (char) {
+              currentMessage.current += char
+              forceUpdate()
+            }
+            scrollDown()
           }
-          if (char) {
-            currentMessage.current += char
-            forceUpdate()
-          }
-          scrollDown()
+          done = readerDone
         }
-        done = readerDone
+        archiveCurrentMessage()
       }
-
-      archiveCurrentMessage()
     } catch (e) {
       console.error(e)
       setLoading(false)
@@ -116,11 +144,16 @@ export const useChatGPT = (props: ChatGPTProps, ref: any) => {
     const newMessages = [...messages, message]
     setMessages(newMessages)
     fetchMessage(newMessages)
+    scrollDown()
   }
 
   const onClear = () => {
     setMessages([])
   }
+
+  useEffect(() => {
+    allMessagesRef.current = messages
+  }, [messages])
 
   useEffect(() => {
     new ClipboardJS('.chat-wrapper .copy-btn')
@@ -133,6 +166,13 @@ export const useChatGPT = (props: ChatGPTProps, ref: any) => {
         setChatContent: (prompt: Prompt) => {
           inputRef.current!.value = prompt.content!
           inputRef.current!.style.height = 'auto'
+        },
+        setMessages: (messages: ChatMessage[]) => {
+          setMessages(messages)
+          scrollDown()
+        },
+        getMessages: () => {
+          return allMessagesRef.current
         }
       }
     },
@@ -144,8 +184,6 @@ export const useChatGPT = (props: ChatGPTProps, ref: any) => {
     disabled,
     messages,
     currentMessage,
-    prompts,
-    version,
     inputRef,
     onChangeVersion,
     onSend,

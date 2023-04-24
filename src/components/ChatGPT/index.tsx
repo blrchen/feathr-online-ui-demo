@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react'
 
-import { ChatGPTProps, ChatRole, Prompt } from './interface'
+import { ChatGPInstance, ChatGPTProps, ChatRole, Prompt } from './interface'
 import MessageItem from './MessageItem'
 import SendBar from './SendBar'
 import { useChatGPT } from './useChatGPT'
@@ -20,15 +20,18 @@ const ChatGPT = (props: ChatGPTProps, ref: any) => {
     onClear,
     onStop
   } = useChatGPT(props, ref)
-
+  const { header } = props
   return (
     <div className="chat-wrapper">
-      {messages.map((message, index) => (
-        <MessageItem key={index} message={message} />
-      ))}
-      {currentMessage.current && (
-        <MessageItem message={{ content: currentMessage.current, role: ChatRole.Assistant }} />
-      )}
+      {header}
+      <div className="message-list">
+        {messages.map((message, index) => (
+          <MessageItem key={index} message={message} />
+        ))}
+        {currentMessage.current && (
+          <MessageItem message={{ content: currentMessage.current, role: ChatRole.Assistant }} />
+        )}
+      </div>
       <SendBar
         loading={loading}
         disabled={disabled}
@@ -42,4 +45,4 @@ const ChatGPT = (props: ChatGPTProps, ref: any) => {
   )
 }
 
-export default forwardRef<{ setChatContent: (prompt: Prompt) => void }, ChatGPTProps>(ChatGPT)
+export default forwardRef<ChatGPInstance, ChatGPTProps>(ChatGPT)
