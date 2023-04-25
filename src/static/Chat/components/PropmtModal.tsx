@@ -17,14 +17,14 @@ const PromptModal = (props: PromptModalProps) => {
     form.submit()
   }
 
-  const onFinish = (values:Prompt) => {
+  const onFinish = (values: Prompt) => {
     onSubmit?.(values)
   }
 
   useEffect(() => {
     if (show) {
       form.setFieldsValue(data)
-    } else  {
+    } else {
       form.resetFields()
     }
   }, [show])

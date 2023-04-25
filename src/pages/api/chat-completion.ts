@@ -1,12 +1,11 @@
 import { ChatConfig, Message } from '@/models'
 import { createParser, ParsedEvent, ReconnectInterval } from 'eventsource-parser'
-import { getFeathrDSL, processQuestion } from '@/utils/prompts'
 import { NextApiResponse } from 'next'
 export const config = {
   runtime: 'edge'
 }
 
-const handler = async (req: Request, res: NextApiResponse): Promise<Response> => {
+const handler = async (req: Request): Promise<Response> => {
   try {
     const { messages, prompts, config } = (await req.json()) as {
       messages: Message[]
@@ -53,7 +52,7 @@ const handler = async (req: Request, res: NextApiResponse): Promise<Response> =>
       model = config.model || 'gpt-3.5-turbo' // todo: allow this to be passed through from client and support gpt-4
     }
     if (config.stream === false) {
-      const data = await OpenAI(apiUrl, apiKey, model, messagesToSend, prompts, config)
+      const data = await OpenAI(apiUrl, apiKey, model, messagesToSend, prompts)
       return new Response(JSON.stringify(data))
     } else {
       const stream = await OpenAIStream(apiUrl, apiKey, model, messagesToSend, prompts, config)
@@ -138,8 +137,7 @@ const OpenAI = async (
   apiKey: string,
   model: string,
   messages: Message[],
-  prompts: Message[],
-  config: ChatConfig
+  prompts: Message[]
 ) => {
   const res = await fetch(apiUrl, {
     headers: {

@@ -14,7 +14,7 @@ const Home = lazy(() => import('@/static/Home'))
 
 const InvokeExternalApi = lazy(() => import('@/static/ExternalApi'))
 
-const FeathrChat = lazy(() => import('@/static/FeathrChat'))
+const FeathrChat = lazy(() => import('src/static/Chat'))
 
 const Page404 = lazy(() => import('@/static/404'))
 

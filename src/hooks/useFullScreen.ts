@@ -15,7 +15,7 @@ export const useFullScreen = () => {
 
   useEffect(() => {
     docElmRef.current = document.documentElement
-    
+
     const fullScreenChangeHandle = () => {
       const { fullscreenElement } = document
       setFullScreen(!!fullscreenElement)
