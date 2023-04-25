@@ -71,7 +71,7 @@ const LookupOnlineStore = () => {
 
   return (
     <PagePanel
-      title="Lookup Online Store"
+      title="Lookup"
       subTitle="Lookup feature values from Feathr Online Store"
       body={<ExecuteForm onSubmit={onExecute} />}
     >

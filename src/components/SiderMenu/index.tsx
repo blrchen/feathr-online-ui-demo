@@ -20,19 +20,19 @@ const menuItems = [
     label: <Link to="/">Home</Link>
   },
   {
-    key: '/lookup-online-store',
+    key: '/lookup',
     icon: <EnvironmentOutlined />,
-    label: <Link to="/lookup-online-store">Lookup Online Store</Link>
+    label: <Link to="/lookup">Lookup</Link>
   },
   {
     key: '/local-compute',
     icon: <EnvironmentOutlined />,
-    label: <Link to="/local-compute">Local Compute</Link>
+    label: <Link to="/local-compute">LocalCompute</Link>
   },
   {
     key: '/invoke-external-api',
     icon: <EnvironmentOutlined />,
-    label: <Link to="/invoke-external-api">Invoke External API</Link>
+    label: <Link to="/invoke-external-api">ExternalAPI</Link>
   },
   {
     key: '/aggregation',
@@ -42,12 +42,12 @@ const menuItems = [
   {
     key: '/model-service',
     icon: <EnvironmentOutlined />,
-    label: <Link to="/model-service">Model Service</Link>
+    label: <Link to="/model-service">Inference</Link>
   },
   {
-    key: '/feathr-chat',
+    key: '/chat',
     icon: <EnvironmentOutlined />,
-    label: <Link to="/feathr-chat">Feathr Chat</Link>
+    label: <Link to="/chat">Chat</Link>
   }
 ]
 

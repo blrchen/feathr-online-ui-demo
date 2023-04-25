@@ -66,7 +66,7 @@ const ExternalApiDemo = () => {
 
   return (
     <PagePanel
-      title="Invoke External API"
+      title="External API"
       subTitle="Invoke arbitrary external JSON-based HTTP API. (Same Data Center)"
       body={<ExecuteForm onSubmit={onExecute} />}
     >

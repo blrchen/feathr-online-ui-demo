@@ -6,7 +6,7 @@ import Loading from '@/components/Loading'
 import AppLayout from '@/layouts/AppLayout'
 import Aggregation from '@/static/Aggregation'
 import LocalCompute from '@/static/LocalCompute'
-import LookupOnlineStore from '@/static/LookupOnlineStore'
+import LookupOnlineStore from 'src/static/Lookup'
 import ModelService from '@/static/ModelService'
 import MovieDetails from '@/static/ModelService/components/MovieDetails'
 
@@ -34,7 +34,7 @@ export const routers: RouteObject[] = [
       },
       {
         index: true,
-        path: '/lookup-online-store',
+        path: '/lookup',
         element: lazyLoad(<LookupOnlineStore />)
       },
       {
@@ -60,7 +60,7 @@ export const routers: RouteObject[] = [
         element: lazyLoad(<MovieDetails />)
       },
       {
-        path: '/feathr-chat',
+        path: '/chat',
         element: lazyLoad(<FeathrChat />)
       },
       {

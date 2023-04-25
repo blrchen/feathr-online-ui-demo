@@ -20,7 +20,7 @@ const HeaderBar = () => {
         <div className={styles.logoBar}>
           <Link href="/">
             <img alt="logo" src="/logo200.png" />
-            <h1>Feathr Online Demo</h1>
+            <h1>Feathr Demo</h1>
           </Link>
         </div>
         <Space className={styles.right} size={0}>

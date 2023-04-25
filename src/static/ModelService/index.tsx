@@ -8,7 +8,7 @@ import MovieList from './components/MovieList'
 
 const ModelService = () => {
   return (
-    <PagePanel title="Model Service" subTitle="Get movie recommendation from model service">
+    <PagePanel title="Inference" subTitle="Get movie recommendation from model service">
       <Row>
         <MovieList />
       </Row>
