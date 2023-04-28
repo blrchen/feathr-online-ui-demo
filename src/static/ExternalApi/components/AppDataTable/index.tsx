@@ -22,12 +22,11 @@ const AppDataTable = (props: AppDataProp) => {
     {
       title: 'IP',
       dataIndex: 'ip',
-      width: 150
     }
   ]
 
   return (
-    <Card title="App Data List" bodyStyle={{ padding: 0 }}>
+    <Card title="App Data List" style={{ width: '100%' }} bodyStyle={{ padding: 0 }}>
       <ResizeTable
         rowSelection={{
           fixed: true,

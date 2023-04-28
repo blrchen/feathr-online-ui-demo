@@ -5,7 +5,7 @@ import { Outlet } from 'react-router-dom'
 
 import FooterBar from '@/components/FooterBar'
 import HeaderBar from '@/components/HeaderBar'
-import SiderMenu from '@/components/SiderMenu'
+import MainMenu from '@/components/MainMenu'
 import GlobalContext from '@/contexts/globalContext'
 
 import styles from './index.module.less'
@@ -27,10 +27,13 @@ const AppLayout = (props: AppLayoutProps) => {
         onSearch: onGlobalSearch
       }}
     >
-      <Layout hasSider className={styles.layout}>
-        <SiderMenu />
+      <Layout className={styles.layout}>
         <Layout>
-          <HeaderBar className={styles.header} />
+          <HeaderBar className={styles.header}>
+            <div className={styles.menuWrapper}>
+              <MainMenu theme="dark" mode="horizontal" />
+            </div>
+          </HeaderBar>
           <Content className={styles.main}>
             <Outlet />
           </Content>

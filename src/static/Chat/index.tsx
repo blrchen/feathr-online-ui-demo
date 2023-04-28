@@ -14,13 +14,15 @@ import ChatSidebar from './components/ChatSidebar'
 import { Chat, Persona } from './components/ChatSidebar/interface'
 
 import styles from './index.module.less'
+import { MenuOutlined } from '@ant-design/icons'
 
-const { Text } = Typography
+const { Text, Link } = Typography
 
 const LocalCompute = () => {
   const chatRef = useRef<ChatGPInstance>(null)
   const messagesMap = useRef<WeakMap<Persona, ChatMessage[]>>(new WeakMap<Persona, ChatMessage[]>())
 
+  const [isActive, setIsActive] = useState(false)
   const [chatList, setChatList] = useState<Chat[]>([])
   const [prompts, setPrompts] = useState<ChatMessage[]>([])
   const [currentChat, setCurrentChat] = useState<Chat | null>()
@@ -50,6 +52,7 @@ const LocalCompute = () => {
     }
     messagesMap.current.set(persona, messages)
     chatRef.current?.setMessages(messages)
+    setIsActive(false)
     saveMessages()
     setPrompts([{ content: persona.prompt || '', role: persona.role! }])
     setCurrentChat(newChat)
@@ -69,6 +72,7 @@ const LocalCompute = () => {
   }
 
   const onChangeChat = (chat?: Chat) => {
+    setIsActive(false)
     saveMessages()
     if (chat) {
       setPrompts([{ content: chat.persona?.prompt || '', role: chat.persona?.role! }])
@@ -80,6 +84,12 @@ const LocalCompute = () => {
 
   const onChangeVersion = (version: ChatGPTVersion) => {
     setChatGPTVersion(version)
+  }
+
+  const onToggleSideBar = () => {
+    setIsActive((state) => {
+      return !state
+    })
   }
 
   useEffect(() => {
@@ -99,6 +109,7 @@ const LocalCompute = () => {
     <>
       <div className={styles.chatWrapper}>
         <ChatSidebar
+          isActive={isActive}
           chatList={chatList}
           currentChatId={currentChat?.id}
           onNewChat={onNewChat}
@@ -106,7 +117,14 @@ const LocalCompute = () => {
           onChangeChat={onChangeChat}
         />
         <ChatGPT
-          header={<div className={styles.chatHeader}>{currentChat?.persona?.name}</div>}
+          header={
+            <div className={styles.chatHeader}>
+              {currentChat?.persona?.name}
+              <Link className={styles.menu} onClick={onToggleSideBar}>
+                <MenuOutlined />
+              </Link>
+            </div>
+          }
           ref={chatRef}
           fetchPath="/api/chat-completion"
           prompts={prompts}
@@ -119,7 +137,6 @@ const LocalCompute = () => {
         title="Chat Settings"
         placement="right"
         closable={true}
-        mask={false}
         onClose={onClose}
         open={open}
         getContainer={false}

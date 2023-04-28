@@ -3,7 +3,7 @@ import React, { lazy, ReactNode, Suspense } from 'react'
 import type { RouteObject } from 'react-router-dom'
 
 import Loading from '@/components/Loading'
-import AppLayout from '@/layouts/AppLayout'
+import BaseLayout from '@/layouts/BaseLayout'
 import Aggregation from '@/static/Aggregation'
 import LocalCompute from '@/static/LocalCompute'
 import LookupOnlineStore from 'src/static/Lookup'
@@ -25,7 +25,7 @@ const lazyLoad = (children: ReactNode): ReactNode => {
 export const routers: RouteObject[] = [
   {
     path: '/',
-    element: <AppLayout />,
+    element: <BaseLayout />,
     children: [
       {
         index: true,

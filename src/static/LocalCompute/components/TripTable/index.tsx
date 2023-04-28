@@ -55,12 +55,13 @@ const TripTable = (props: TripTableProps) => {
       title: 'Fare Amount',
       dataIndex: 'fareAmount',
       ellipsis: true,
-      width: 100
+      width: 100,
+      resize: false
     }
   ]
 
   return (
-    <Card title="Trip List" bodyStyle={{ padding: 0 }}>
+    <Card title="Trip List" style={{width: '100%'}} bodyStyle={{ padding: 0 }}>
       <ResizeTable
         rowSelection={{
           fixed: true,
@@ -68,7 +69,7 @@ const TripTable = (props: TripTableProps) => {
           onChange: onSelect
         }}
         bordered={true}
-        scroll={{ y: 650 }}
+        scroll={{ x: '100%' }}
         columns={columns}
         rowKey="id"
         dataSource={data}

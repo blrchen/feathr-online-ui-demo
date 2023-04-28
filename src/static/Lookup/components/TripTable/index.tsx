@@ -60,7 +60,7 @@ const TripTable = (props: TripTableProps) => {
   ]
 
   return (
-    <Card title="Trip List" bodyStyle={{ padding: 0 }}>
+    <Card title="Trip List" style={{ width: '100%' }} bodyStyle={{ padding: 0 }}>
       <ResizeTable
         rowSelection={{
           fixed: true,

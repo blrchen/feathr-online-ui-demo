@@ -17,27 +17,31 @@ const ResultTable = (props: ResultTableProps) => {
   const columns = [
     {
       title: 'Function',
-      dataIndex: 'pipeline'
+      dataIndex: 'pipeline',
+      with: 100
     },
     {
       title: 'Count',
-      dataIndex: 'count'
+      dataIndex: 'count',
+      with: 100
     },
     {
       title: 'Time',
       dataIndex: 'time',
       render: (col: number) => {
         return `${col}ms`
-      }
+      },
+      with: 100
     },
     {
       title: 'Status',
-      dataIndex: 'status'
+      dataIndex: 'status',
+      with: 100
     }
   ]
 
   return (
-    <Card title="Result List" bodyStyle={{ padding: 0 }}>
+    <Card title="Result List" style={{ width: '100%' }} bodyStyle={{ padding: 0 }}>
       <ResizeTable
         expandable={{
           expandedRowRender: ({ data }: { data: any[] }) => {

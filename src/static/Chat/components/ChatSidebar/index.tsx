@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Avatar, List, Typography, Popconfirm, Collapse, ConfigProvider } from 'antd'
 
 import { ChatSidebarProps, Persona } from './interface'
-
+import cs from 'classnames'
 import {
   CloseCircleOutlined,
   DeleteOutlined,
@@ -23,7 +23,8 @@ const { Panel } = Collapse
 const { Link } = Typography
 
 const ChatSidebar = (props: ChatSidebarProps) => {
-  const { currentChatId, chatList, onChangeChat, onCloseChat, onSettings, onNewChat } = props
+  const { isActive, currentChatId, chatList, onChangeChat, onCloseChat, onSettings, onNewChat } =
+    props
 
   const currentPersonaIndex = useRef<number>(-1)
   const [personas, setPersonas] = useState<Persona[]>([])
@@ -76,7 +77,7 @@ const ChatSidebar = (props: ChatSidebarProps) => {
 
   return (
     <ConfigProvider renderEmpty={() => <></>}>
-      <div className={styles.sidebar}>
+      <div className={cs(styles.sidebar, isActive ? styles.active : null)}>
         <List
           className={styles.chatList}
           itemLayout="horizontal"

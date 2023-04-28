@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
+import { Layout } from 'antd'
 
-import { EnvironmentOutlined, HomeOutlined } from '@ant-design/icons'
-import { Layout, Menu } from 'antd'
-import { Link, useLocation } from 'react-router-dom'
+import MainMenu from '@/components/MainMenu'
 
 import styles from './index.module.less'
 
@@ -13,64 +12,15 @@ interface SiderMenuProps {
 
 const { Sider } = Layout
 
-const menuItems = [
-  {
-    key: '/',
-    icon: <HomeOutlined />,
-    label: <Link to="/">Home</Link>
-  },
-  {
-    key: '/lookup',
-    icon: <EnvironmentOutlined />,
-    label: <Link to="/lookup">Lookup</Link>
-  },
-  {
-    key: '/local-compute',
-    icon: <EnvironmentOutlined />,
-    label: <Link to="/local-compute">LocalCompute</Link>
-  },
-  {
-    key: '/invoke-external-api',
-    icon: <EnvironmentOutlined />,
-    label: <Link to="/invoke-external-api">ExternalAPI</Link>
-  },
-  {
-    key: '/aggregation',
-    icon: <EnvironmentOutlined />,
-    label: <Link to="/aggregation">Aggregation</Link>
-  },
-  {
-    key: '/model-service',
-    icon: <EnvironmentOutlined />,
-    label: <Link to="/model-service">Inference</Link>
-  },
-  {
-    key: '/chat',
-    icon: <EnvironmentOutlined />,
-    label: <Link to="/chat">Chat</Link>
-  }
-]
-
 const defaultProps = {
   collapsedWidth: 48,
   siderWidth: 200
-}
-
-const getMenuKey = (pathname: string) => {
-  return pathname
 }
 
 function SiderMenu(props: SiderMenuProps) {
   const { siderWidth, collapsedWidth } = { ...defaultProps, ...props }
   const [collapsed, setCollapsed] = useState<boolean>(true)
   const [transition, setTransition] = useState<string>('none')
-  const location = useLocation()
-
-  const [current, setcurrent] = useState<string>(getMenuKey(location.pathname))
-
-  useEffect(() => {
-    setcurrent(getMenuKey(location.pathname))
-  }, [location.pathname])
 
   useEffect(() => {
     setTransition('all 0.2s ease 0s')
@@ -100,13 +50,7 @@ function SiderMenu(props: SiderMenuProps) {
       >
         {/* <div className="logo" /> */}
         <div style={{ flex: '1 1 0%', overflow: 'hidden auto' }}>
-          <Menu
-            className={styles.menu}
-            items={menuItems}
-            mode="inline"
-            selectedKeys={[current]}
-            style={{ height: '100%', borderRight: 0 }}
-          />
+          <MainMenu style={{ height: '100%', borderRight: 0 }} className={styles.menu}  mode="inline"/>
         </div>
       </Sider>
     </>

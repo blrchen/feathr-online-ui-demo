@@ -14,6 +14,7 @@ export interface Chat {
 }
 
 export interface ChatSidebarProps {
+  isActive?: boolean
   chatList?: Chat[]
   currentChatId?: string
   onChangeChat?: (chat: Chat) => void

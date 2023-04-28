@@ -37,7 +37,7 @@ const ResultTable = (props: ResultTableProps) => {
   ]
 
   return (
-    <Card title="Result List" bodyStyle={{ padding: 0 }}>
+    <Card title="Result List" style={{ width: '100%' }} bodyStyle={{ padding: 0 }}>
       <ResizeTable
         expandable={{
           expandedRowRender: ({ data }: { data: any[] }) => {
@@ -66,7 +66,7 @@ const ResultTable = (props: ResultTableProps) => {
         loading={loading}
         dataSource={data}
         columns={columns}
-        scroll={{ y: 650 }}
+        scroll={{ x: '100%', y: 650 }}
       />
     </Card>
   )
