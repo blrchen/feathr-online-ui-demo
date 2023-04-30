@@ -61,7 +61,7 @@ const ChatSidebar = (props: ChatSidebarProps) => {
 
   const onDeletePersona = (index: number) => {
     setPersonas((state) => {
-      state.splice(index, 1)
+      state.splice(index-1, 1)
       return [...state]
     })
   }
