@@ -125,6 +125,7 @@ const LocalCompute = () => {
               </Link>
             </div>
           }
+          doc={currentChat?.persona?.doc}
           ref={chatRef}
           fetchPath="/api/chat-completion"
           prompts={prompts}

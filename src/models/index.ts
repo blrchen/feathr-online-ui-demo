@@ -12,4 +12,8 @@ export enum ChatGPTVersion {
   GPT_4 = 'gpt-4',
   GPT_4_32K = 'gpt-4-32k'
 }
+export interface Doc {
+  name: string
+} 
+
 export type Role = 'assistant' | 'user'

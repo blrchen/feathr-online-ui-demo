@@ -4,6 +4,7 @@ import ClipboardJS from 'clipboard'
 import { throttle } from 'lodash-es'
 
 import { ChatConfig, ChatGPTProps, ChatMessage, ChatRole, Prompt } from './interface'
+import { Doc } from '@/models'
 
 const scrollDown = throttle(
   () => {
@@ -24,14 +25,16 @@ const requestMessage = async (
   messages: ChatMessage[],
   prompts: ChatMessage[],
   controller: AbortController | null,
-  config: ChatConfig
+  config: ChatConfig,
+  doc?: Doc
 ) => {
   const response = await fetch(url, {
     method: 'POST',
     body: JSON.stringify({
       messages,
       prompts,
-      config
+      config,
+      doc
     }),
     signal: controller?.signal
   })
@@ -54,7 +57,7 @@ const requestMessage = async (
 export const useChatGPT = (props: ChatGPTProps, ref: any) => {
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
-  const { prompts = [], config = {}, fetchPath, onSettings, onChangeVersion } = props
+  const { prompts = [], config = {}, fetchPath, doc, onSettings, onChangeVersion } = props
   const [, forceUpdate] = useReducer((x) => !x, false)
   const allMessagesRef = useRef<ChatMessage[]>([])
   const [messages, setMessages] = useState<ChatMessage[]>([])
@@ -94,7 +97,8 @@ export const useChatGPT = (props: ChatGPTProps, ref: any) => {
           messages,
           prompts,
           controller.current,
-          config
+          config,
+          doc
         )) as Response
         const json = await data.json()
         archiveCurrentMessage(json.message)
@@ -104,7 +108,8 @@ export const useChatGPT = (props: ChatGPTProps, ref: any) => {
           messages,
           prompts,
           controller.current,
-          config
+          config,
+          doc
         )) as ReadableStreamDefaultReader<Uint8Array>
         const decoder = new TextDecoder('utf-8')
         let done = false

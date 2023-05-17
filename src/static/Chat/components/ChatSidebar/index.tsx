@@ -14,11 +14,19 @@ import styles from './index.module.less'
 import PersonaModal from '../PersonaModal'
 import { ChatRole } from '@/components/ChatGPT/interface'
 
-const DefaultPersona = {
-  role: ChatRole.System,
-  name: 'Default',
-  prompt: 'I am going to teach you a DSL, could you learn it? \n Feathr DSL: \n'
-}
+const DefaultPersona = [
+  {
+    role: ChatRole.System,
+    name: 'Default',
+    prompt: 'I am going to teach you a DSL, could you learn it? \n Feathr DSL: \n'
+  },
+  {
+    role: ChatRole.System,
+    name: 'Doc',
+    prompt: '',
+    doc: { name: 'hai-vector' }
+  }
+]
 const { Panel } = Collapse
 const { Link } = Typography
 
@@ -61,14 +69,14 @@ const ChatSidebar = (props: ChatSidebarProps) => {
 
   const onDeletePersona = (index: number) => {
     setPersonas((state) => {
-      state.splice(index-1, 1)
+      state.splice(index - DefaultPersona.length, 1)
       return [...state]
     })
   }
 
   useEffect(() => {
     setPersonas(JSON.parse(localStorage.getItem('Personas') || '[]') as Persona[])
-    onNewChat?.(DefaultPersona)
+    onNewChat?.(DefaultPersona[0])
   }, [])
 
   useEffect(() => {
@@ -144,7 +152,7 @@ const ChatSidebar = (props: ChatSidebarProps) => {
             <List
               className={styles.list}
               itemLayout="horizontal"
-              dataSource={[DefaultPersona, ...personas]}
+              dataSource={[...DefaultPersona, ...personas]}
               renderItem={(item, index) => (
                 <List.Item
                   key={index}

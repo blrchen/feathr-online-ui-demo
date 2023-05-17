@@ -1,3 +1,4 @@
+import { Doc } from '@/models'
 import type { MutableRefObject, ReactNode, RefObject } from 'react'
 
 export enum ChatRole {
@@ -21,6 +22,7 @@ export interface ChatGPTProps {
   fetchPath: string
   config?: ChatConfig
   prompts?: ChatMessage[]
+  doc?: Doc
   onSettings?: () => void
   onChangeVersion?: (version: ChatGPTVersion) => void
 }

@@ -1,10 +1,12 @@
 import { ChatMessage, ChatRole } from '@/components/ChatGPT/interface'
+import { Doc } from '@/models'
 
 export interface Persona {
   role: ChatRole
   avatar?: string
   name?: string
   prompt?: string
+  doc?: Doc
 }
 
 export interface Chat {
