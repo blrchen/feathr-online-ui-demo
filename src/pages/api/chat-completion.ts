@@ -5,11 +5,9 @@ import base64 from 'base-64'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { pipeline, Readable } from 'stream'
 import { promisify } from 'util'
-const pipelineAsync = promisify(pipeline)
-// export const config = {
-//   // runtime: 'edge'
-// }
 
+const pipelineAsync = promisify(pipeline)
+ 
 const getAPIInfo = (
   config: ChatConfig,
   deployment: string = process.env.AZURE_OPENAI_DEPLOYMENT || '',
