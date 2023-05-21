@@ -26,7 +26,6 @@ const AppLayout = (props: AppLayoutProps) => {
   useEffect(() => {
     getFinger().then((finger) => {
       visitorIdRef.current = finger.visitorId
-      console.log(`visitorIdRef.current`, visitorIdRef.current)
     })
   }, [])
 

@@ -51,7 +51,7 @@ const saveFiles = async (data: UploadFormData) => {
           readStream.on('end', () => {
             fs.unlinkSync(file.filepath)
             resovle({
-              path: dir + fileName,
+              path: dir + '/' + fileName,
               hashName: file.newFilename,
               fileName: file.originalFilename || ''
             })
