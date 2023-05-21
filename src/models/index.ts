@@ -13,7 +13,8 @@ export enum ChatGPTVersion {
   GPT_4_32K = 'gpt-4-32k'
 }
 export interface Doc {
-  name: string
-} 
+  files: { name: string; path: string }[]
+  vector: string
+}
 
 export type Role = 'assistant' | 'user'

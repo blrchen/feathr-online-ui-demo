@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { ReactNode, useEffect, useRef, useState } from 'react'
 import { Avatar, List, Typography, Popconfirm, Collapse, ConfigProvider } from 'antd'
 
 import { ChatSidebarProps, Persona } from './interface'
@@ -14,7 +14,7 @@ import styles from './index.module.less'
 import PersonaModal from '../PersonaModal'
 import { ChatRole } from '@/components/ChatGPT/interface'
 
-const DefaultPersona = [
+const DefaultPersona: Persona[] = [
   {
     role: ChatRole.System,
     name: 'Default',
@@ -24,7 +24,10 @@ const DefaultPersona = [
     role: ChatRole.System,
     name: 'Doc',
     prompt: '',
-    doc: { name: 'hai-vector' }
+    doc: {
+      files: [],
+      vector: 'hai-vector'
+    }
   }
 ]
 const { Panel } = Collapse
@@ -153,40 +156,47 @@ const ChatSidebar = (props: ChatSidebarProps) => {
               className={styles.list}
               itemLayout="horizontal"
               dataSource={[...DefaultPersona, ...personas]}
-              renderItem={(item, index) => (
-                <List.Item
-                  key={index}
-                  onClick={() => {
-                    onNewChat?.(item)
-                  }}
-                  actions={
-                    index !== 0
-                      ? [
-                          <Link
-                            key="eidt"
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              onShowPersonaModal(item, index)
-                            }}
-                          >
-                            <FormOutlined />
-                          </Link>,
-                          <Link
-                            key="delete"
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              onDeletePersona(index)
-                            }}
-                          >
-                            <DeleteOutlined />
-                          </Link>
-                        ]
-                      : []
+              renderItem={(item, index) => {
+                const actions: ReactNode[] = []
+                if (index !== 0) {
+                  if (!item.doc) {
+                    actions.push(
+                      <Link
+                        key="eidt"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          onShowPersonaModal(item, index)
+                        }}
+                      >
+                        <FormOutlined />
+                      </Link>
+                    )
                   }
-                >
-                  <List.Item.Meta title={item.name} />
-                </List.Item>
-              )}
+                  actions.push(
+                    <Link
+                      key="delete"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onDeletePersona(index)
+                      }}
+                    >
+                      <DeleteOutlined />
+                    </Link>
+                  )
+                }
+
+                return (
+                  <List.Item
+                    key={index}
+                    actions={actions}
+                    onClick={() => {
+                      onNewChat?.(item)
+                    }}
+                  >
+                    <List.Item.Meta title={item.name} />
+                  </List.Item>
+                )
+              }}
             />
           </Panel>
         </Collapse>

@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react'
+import React, { ReactNode, useEffect, useRef } from 'react'
 
 import { Layout } from 'antd'
 import { Outlet } from 'react-router-dom'
@@ -9,6 +9,7 @@ import MainMenu from '@/components/MainMenu'
 import GlobalContext from '@/contexts/globalContext'
 
 import styles from './index.module.less'
+import { getFinger } from '@/utils/finger'
 
 export interface AppLayoutProps {
   children?: ReactNode
@@ -17,14 +18,23 @@ export interface AppLayoutProps {
 const { Content } = Layout
 
 const AppLayout = (props: AppLayoutProps) => {
+  const visitorIdRef = useRef<any>()
   const onGlobalSearch = (_value: string) => {
     //
   }
 
+  useEffect(() => {
+    getFinger().then((finger) => {
+      visitorIdRef.current = finger.visitorId
+      console.log(`visitorIdRef.current`, visitorIdRef.current)
+    })
+  }, [])
+
   return (
     <GlobalContext.Provider
       value={{
-        onSearch: onGlobalSearch
+        onSearch: onGlobalSearch,
+        visitorId: visitorIdRef
       }}
     >
       <Layout className={styles.layout}>
