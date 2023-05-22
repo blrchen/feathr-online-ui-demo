@@ -19,15 +19,6 @@ const DefaultPersona: Persona[] = [
     role: ChatRole.System,
     name: 'Default',
     prompt: 'I am going to teach you a DSL, could you learn it? \n Feathr DSL: \n'
-  },
-  {
-    role: ChatRole.System,
-    name: 'Doc',
-    prompt: '',
-    doc: {
-      files: [],
-      vector: 'hai-vector'
-    }
   }
 ]
 const { Panel } = Collapse

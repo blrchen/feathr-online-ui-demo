@@ -7,6 +7,7 @@ import { encode } from 'gpt-3-encoder'
 import { ENVConfig, GetEmbeddings } from './chat-completion'
 import { createHash } from 'crypto'
 import dayjs from 'dayjs'
+
 export const config = {
   api: {
     bodyParser: false
@@ -21,13 +22,6 @@ const currentPath = process.cwd()
 const resolve = (...args: Array<string>) => {
   return path.join(currentPath, ...args).replaceAll('\\', '/')
 }
-
-// const mkdirs = (dirpath: string) => {
-//   var dirArray = dirpath.split('/')
-//   if (!fs.existsSync(dirpath)) {
-//     fs.mkdir(0, dirArray)
-//   }
-// }
 
 const saveFiles = async (data: UploadFormData) => {
   return await Promise.all(
