@@ -11,16 +11,17 @@ import {
 } from '@ant-design/icons'
 
 import styles from './index.module.less'
-import PersonaModal from '../PersonaModal'
+import PersonaModal, { PersonaForm } from '../PersonaModal'
 import { ChatRole } from '@/components/ChatGPT/interface'
 
-const DefaultPersona: Persona[] = [
+export const DefaultPersona: Persona[] = [
   {
     role: ChatRole.System,
     name: 'Default',
     prompt: 'I am going to teach you a DSL, could you learn it? \n Feathr DSL: \n'
   }
 ]
+
 const { Panel } = Collapse
 const { Link } = Typography
 
@@ -43,9 +44,13 @@ const ChatSidebar = (props: ChatSidebarProps) => {
     setShowModal(false)
   }
 
-  const onModalSubmit = (persona: Persona) => {
+  const onModalSubmit = ({ active, ...persona }: PersonaForm) => {
+    console.log(33333, active, persona)
     setPersonas((state) => {
       if (currentPersonaIndex.current === -1) {
+        if (active) {
+          onNewChat?.(persona)
+        }
         state.push(persona)
       } else {
         state.splice(currentPersonaIndex.current, 1, persona)
@@ -70,7 +75,6 @@ const ChatSidebar = (props: ChatSidebarProps) => {
 
   useEffect(() => {
     setPersonas(JSON.parse(localStorage.getItem('Personas') || '[]') as Persona[])
-    onNewChat?.(DefaultPersona[0])
   }, [])
 
   useEffect(() => {

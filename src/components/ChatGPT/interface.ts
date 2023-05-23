@@ -23,6 +23,7 @@ export interface ChatGPTProps {
   config?: ChatConfig
   prompts?: ChatMessage[]
   doc?: Doc
+  onMessages?: (messages: ChatMessage[]) => void
   onSettings?: () => void
   onChangeVersion?: (version: ChatGPTVersion) => void
 }

@@ -1,5 +1,16 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { Form, Input, Select, Modal, Tabs, Upload, UploadProps, UploadFile, Spin } from 'antd'
+import {
+  Form,
+  Input,
+  Select,
+  Modal,
+  Tabs,
+  Upload,
+  UploadProps,
+  UploadFile,
+  Spin,
+  Checkbox
+} from 'antd'
 import { ChatRole, Prompt } from '@/components/ChatGPT/interface'
 import axios from 'axios'
 import { InboxOutlined, LoadingOutlined } from '@ant-design/icons'
@@ -14,6 +25,8 @@ export interface PromptModalProps {
   onSubmit?: (value: Persona) => void
   onCancel?: () => void
 }
+
+export type PersonaForm = Persona & { active?: boolean }
 
 const { Dragger } = Upload
 
@@ -35,7 +48,8 @@ const PersonaModal = (props: PromptModalProps) => {
     }
   }
 
-  const onFinish = (values: Persona) => {
+  const onFinish = (values: PersonaForm) => {
+    values.role = ChatRole.System
     if (tabKey === 'normal') {
       onSubmit?.(values)
     } else {
@@ -55,7 +69,7 @@ const PersonaModal = (props: PromptModalProps) => {
     setFileList(fileList)
   }
 
-  const uploadFiles = async (values: Persona) => {
+  const uploadFiles = async (values: PersonaForm) => {
     if (fileList.length > 0) {
       setIsUploading(true)
       let formData = new FormData()
@@ -104,21 +118,14 @@ const PersonaModal = (props: PromptModalProps) => {
           >
             <Input />
           </Form.Item>
-          <Form.Item
-            label="Role"
-            name="role"
-            rules={[{ required: true, message: 'Please select the role!' }]}
-          >
-            <Select
-              options={Object.values(ChatRole).map((item) => ({
-                label: item,
-                value: item
-              }))}
-            />
-          </Form.Item>
           <Form.Item label="Prompt" name="prompt">
             <Input.TextArea />
           </Form.Item>
+          {!data && (
+            <Form.Item name="active" valuePropName="checked">
+              <Checkbox>Auto Active</Checkbox>
+            </Form.Item>
+          )}
         </Form>
       )
     }
@@ -134,22 +141,27 @@ const PersonaModal = (props: PromptModalProps) => {
           >
             <Input />
           </Form.Item>
-          <Dragger
-            accept=".pdf,application/pdf"
-            multiple
-            fileList={fileList}
-            beforeUpload={beforeUpload}
-            onChange={onChangeDragger}
-          >
-            <p className="ant-upload-drag-icon">
-              <InboxOutlined />
-            </p>
-            <p className="ant-upload-text">Click or drag file to this area to upload</p>
-            <p className="ant-upload-hint">
-              Support for a single or bulk upload. Strictly prohibit from uploading company data or
-              other band files
-            </p>
-          </Dragger>
+          <Form.Item>
+            <Dragger
+              accept=".pdf,application/pdf"
+              multiple
+              fileList={fileList}
+              beforeUpload={beforeUpload}
+              onChange={onChangeDragger}
+            >
+              <p className="ant-upload-drag-icon">
+                <InboxOutlined />
+              </p>
+              <p className="ant-upload-text">Click or drag file to this area to upload</p>
+              <p className="ant-upload-hint">
+                Support for a single or bulk upload. Strictly prohibit from uploading company data
+                or other band files
+              </p>
+            </Dragger>
+          </Form.Item>
+          <Form.Item name="active">
+            <Checkbox>Auto Active</Checkbox>
+          </Form.Item>
         </Form>
       )
     }
@@ -176,7 +188,7 @@ const PersonaModal = (props: PromptModalProps) => {
   }, [show])
 
   return (
-    <Modal title="Persona" open={show} onOk={onOk} onCancel={onCancel} getContainer={false}>
+    <Modal title="Persona" open={show} onOk={onOk} onCancel={onCancel} forceRender getContainer={false}>
       <Spin
         spinning={isUploading}
         tip="Loading..."

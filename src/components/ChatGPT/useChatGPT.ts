@@ -57,7 +57,15 @@ const requestMessage = async (
 export const useChatGPT = (props: ChatGPTProps, ref: any) => {
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
-  const { prompts = [], config = {}, fetchPath, doc, onSettings, onChangeVersion } = props
+  const {
+    prompts = [],
+    config = {},
+    fetchPath,
+    doc,
+    onMessages,
+    onSettings,
+    onChangeVersion
+  } = props
   const [, forceUpdate] = useReducer((x) => !x, false)
   const allMessagesRef = useRef<ChatMessage[]>([])
   const [messages, setMessages] = useState<ChatMessage[]>([])
@@ -73,13 +81,15 @@ export const useChatGPT = (props: ChatGPTProps, ref: any) => {
     setLoading(false)
     if (content) {
       setMessages((messages) => {
-        return [
+        const newMessages = [
           ...messages,
           {
             content,
             role: ChatRole.Assistant
           }
         ]
+        onMessages?.(newMessages)
+        return newMessages
       })
       scrollDown()
     }
@@ -149,11 +159,13 @@ export const useChatGPT = (props: ChatGPTProps, ref: any) => {
     const newMessages = [...messages, message]
     setMessages(newMessages)
     fetchMessage(newMessages)
+    onMessages?.(newMessages)
     scrollDown()
   }
 
   const onClear = () => {
     setMessages([])
+    onMessages?.([])
   }
 
   useEffect(() => {

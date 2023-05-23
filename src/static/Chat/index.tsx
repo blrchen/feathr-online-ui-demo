@@ -10,7 +10,7 @@ import {
 } from '@/components/ChatGPT/interface'
 import { observer } from '@/hooks'
 
-import ChatSidebar from './components/ChatSidebar'
+import ChatSidebar, { DefaultPersona } from './components/ChatSidebar'
 import { Chat, Persona } from './components/ChatSidebar/interface'
 
 import styles from './index.module.less'
@@ -18,9 +18,15 @@ import { MenuOutlined } from '@ant-design/icons'
 
 const { Text, Link } = Typography
 
+const enum StorageKeys {
+  Chat_GPT_Version = 'chatGPTVersion',
+  Chat_List = 'chatList',
+  Chat_Current_ID = 'chatCurrentID'
+}
+
 const LocalCompute = () => {
   const chatRef = useRef<ChatGPInstance>(null)
-  const messagesMap = useRef<WeakMap<Persona, ChatMessage[]>>(new WeakMap<Persona, ChatMessage[]>())
+  const messagesMap = useRef<Map<string, ChatMessage[]>>(new Map<string, ChatMessage[]>())
 
   const [isActive, setIsActive] = useState(false)
   const [chatList, setChatList] = useState<Chat[]>([])
@@ -39,7 +45,7 @@ const LocalCompute = () => {
 
   const saveMessages = () => {
     if (currentChat) {
-      messagesMap.current.set(currentChat.persona!, chatRef.current?.getMessages() || [])
+      messagesMap.current.set(currentChat.id, chatRef.current?.getMessages() || [])
     }
   }
 
@@ -50,7 +56,7 @@ const LocalCompute = () => {
       id,
       persona: persona
     }
-    messagesMap.current.set(persona, messages)
+    messagesMap.current.set(id, messages)
     chatRef.current?.setMessages(messages)
     setIsActive(false)
     saveMessages()
@@ -63,7 +69,7 @@ const LocalCompute = () => {
 
   const onCloseChat = (chat: Chat) => {
     const index = chatList.findIndex((item) => item.id === chat.id)
-    messagesMap.current.delete(chat.persona!)
+    messagesMap.current.delete(chat.id!)
     chatList.splice(index, 1)
     setChatList([...chatList])
     if (chatList.length && chat.id === currentChat?.id) {
@@ -77,7 +83,7 @@ const LocalCompute = () => {
     if (chat) {
       setPrompts([{ content: chat.persona?.prompt || '', role: chat.persona?.role! }])
       setCurrentChat(chat)
-      const messages = messagesMap.current.get(chat.persona!)
+      const messages = messagesMap.current.get(chat.id!)
       chatRef.current?.setMessages(messages || [])
     }
   }
@@ -93,17 +99,56 @@ const LocalCompute = () => {
   }
 
   useEffect(() => {
-    const version = localStorage.getItem('chatGPTVersion') as ChatGPTVersion
+    const version = localStorage.getItem(StorageKeys.Chat_GPT_Version) as ChatGPTVersion
+    const chatList = (JSON.parse(localStorage.getItem(StorageKeys.Chat_List) || '[]') ||
+      []) as Chat[]
+    const currentChatId = localStorage.getItem(StorageKeys.Chat_Current_ID)
+
+    if (chatList.length > 0) {
+      const currentChat = chatList.find((chat) => chat.id === currentChatId)
+      setChatList(chatList)
+
+      chatList.forEach((chat) => {
+        const messages = JSON.parse(
+          localStorage.getItem(`ms_${chat?.id}`) || '[]'
+        ) as ChatMessage[]
+        messagesMap.current.set(chat.id!, messages)
+      })
+      onChangeChat(currentChat || chatList[0])
+    } else {
+      onNewChat(DefaultPersona[0])
+    }
+
     setChatGPTVersion(version || ChatGPTVersion.GPT_35_turbo)
     document.body.style.overflow = 'hidden'
+
     return () => {
       document.body.removeAttribute('style')
+      localStorage.setItem(StorageKeys.Chat_List, JSON.stringify(chatList))
     }
   }, [])
 
+  const onMessages = (messages: ChatMessage[]) => {
+    if (messages.length > 0) {
+      localStorage.setItem(`ms_${currentChat?.id}`, JSON.stringify(messages))
+    } else {
+      localStorage.removeItem(`ms_${currentChat?.id}`)
+    }
+  }
+
   useEffect(() => {
-    localStorage.setItem('chatGPTVersion', chatGPTVersion)
+    localStorage.setItem(StorageKeys.Chat_GPT_Version, chatGPTVersion)
   }, [chatGPTVersion])
+
+  useEffect(() => {
+    localStorage.setItem(StorageKeys.Chat_List, JSON.stringify(chatList))
+  }, [chatList])
+
+  useEffect(() => {
+    if (currentChat) {
+      localStorage.setItem(StorageKeys.Chat_Current_ID, currentChat?.id)
+    }
+  }, [currentChat])
 
   return (
     <>
@@ -130,6 +175,7 @@ const LocalCompute = () => {
           fetchPath="/api/chat-completion"
           prompts={prompts}
           config={{ model: chatGPTVersion, stream: true }}
+          onMessages={onMessages}
           onChangeVersion={onChangeVersion}
           onSettings={showDrawer}
         />
