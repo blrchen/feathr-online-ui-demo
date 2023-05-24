@@ -24,7 +24,7 @@ const enum StorageKeys {
   Chat_Current_ID = 'chatCurrentID'
 }
 
-const LocalCompute = () => {
+const Chat = () => {
   const chatRef = useRef<ChatGPInstance>(null)
   const messagesMap = useRef<Map<string, ChatMessage[]>>(new Map<string, ChatMessage[]>())
 
@@ -207,4 +207,4 @@ const LocalCompute = () => {
   )
 }
 
-export default observer(LocalCompute)
+export default observer(Chat)

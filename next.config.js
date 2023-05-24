@@ -4,7 +4,7 @@ const path = require('node:path')
 
 const nextConfig = {
   output: 'standalone',
-  reactStrictMode: false,
+  reactStrictMode: true,
   swcMinify: true,
   transpilePackages: ['antd-mobile'],
   webpack(config, options) {
