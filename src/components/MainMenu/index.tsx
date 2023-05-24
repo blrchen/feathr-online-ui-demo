@@ -20,6 +20,11 @@ const menuItems = [
     label: <Link to="/">Home</Link>
   },
   {
+    key: '/chat',
+    icon: <EnvironmentOutlined />,
+    label: <Link to="/chat">Chat</Link>
+  },
+  {
     key: '/lookup',
     icon: <EnvironmentOutlined />,
     label: <Link to="/lookup">Lookup</Link>
@@ -43,11 +48,6 @@ const menuItems = [
     key: '/model-service',
     icon: <EnvironmentOutlined />,
     label: <Link to="/model-service">Inference</Link>
-  },
-  {
-    key: '/chat',
-    icon: <EnvironmentOutlined />,
-    label: <Link to="/chat">Chat</Link>
   }
 ]
 
