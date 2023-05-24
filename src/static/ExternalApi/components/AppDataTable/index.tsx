@@ -21,7 +21,7 @@ const AppDataTable = (props: AppDataProp) => {
   const columns = [
     {
       title: 'IP',
-      dataIndex: 'ip',
+      dataIndex: 'ip'
     }
   ]
 

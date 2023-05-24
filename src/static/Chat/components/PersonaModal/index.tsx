@@ -188,7 +188,14 @@ const PersonaModal = (props: PromptModalProps) => {
   }, [show])
 
   return (
-    <Modal title="Persona" open={show} onOk={onOk} onCancel={onCancel} forceRender getContainer={false}>
+    <Modal
+      title="Persona"
+      open={show}
+      onOk={onOk}
+      onCancel={onCancel}
+      forceRender
+      getContainer={false}
+    >
       <Spin
         spinning={isUploading}
         tip="Loading..."

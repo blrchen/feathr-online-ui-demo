@@ -132,7 +132,7 @@ const OpenAIStream = async (
       top_p: 0.95
     })
   })
-  
+
   if (res.status !== 200) {
     const statusText = res.statusText
     throw new Error(
@@ -204,11 +204,7 @@ const OpenAI = async (
   }
 }
 
-const DocQuestion = async (
-  config: ChatConfig,
-  messages: Message[],
-  doc: Doc
-) => {
+const DocQuestion = async (config: ChatConfig, messages: Message[], doc: Doc) => {
   const { apiUrl, apiKey } = getAPIInfo(config, '', ENVConfig.azure.embeddingName, 'embeddings')
 
   const message = messages[messages.length - 1]
@@ -223,7 +219,7 @@ const DocQuestion = async (
   let contents = searchResults.map((hit: any) => hit._source.content)
 
   const context = getTopContents(contents).join(' ')
-  
+
   message.content = `Answer the question based on the context below, and if the question can't be answered based on the context, say \"I don't know\"
   Context: ${context}
   ---

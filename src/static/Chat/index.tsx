@@ -109,9 +109,7 @@ const Chat = () => {
       setChatList(chatList)
 
       chatList.forEach((chat) => {
-        const messages = JSON.parse(
-          localStorage.getItem(`ms_${chat?.id}`) || '[]'
-        ) as ChatMessage[]
+        const messages = JSON.parse(localStorage.getItem(`ms_${chat?.id}`) || '[]') as ChatMessage[]
         messagesMap.current.set(chat.id!, messages)
       })
       onChangeChat(currentChat || chatList[0])
