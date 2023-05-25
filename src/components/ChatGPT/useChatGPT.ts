@@ -177,7 +177,7 @@ export const useChatGPT = (props: ChatGPTProps, ref: any) => {
       inputRef.current!.focus()
     }
   }, [loading])
-  
+
   useEffect(() => {
     new ClipboardJS('.chat-wrapper .copy-btn')
   }, [])
@@ -196,6 +196,9 @@ export const useChatGPT = (props: ChatGPTProps, ref: any) => {
         },
         getMessages: () => {
           return allMessagesRef.current
+        },
+        focus: () => {
+          inputRef.current!.focus()
         }
       }
     },

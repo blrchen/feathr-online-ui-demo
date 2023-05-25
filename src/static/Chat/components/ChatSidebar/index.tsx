@@ -45,7 +45,6 @@ const ChatSidebar = (props: ChatSidebarProps) => {
   }
 
   const onModalSubmit = ({ active, ...persona }: PersonaForm) => {
-    console.log(33333, active, persona)
     setPersonas((state) => {
       if (currentPersonaIndex.current === -1) {
         if (active) {
@@ -53,7 +52,7 @@ const ChatSidebar = (props: ChatSidebarProps) => {
         }
         state.push(persona)
       } else {
-        state.splice(currentPersonaIndex.current, 1, persona)
+        state.splice(currentPersonaIndex.current - DefaultPersona.length, 1, persona)
       }
       return [...state]
     })

@@ -65,6 +65,7 @@ const Chat = () => {
     setChatList((state) => {
       return [...state, newChat]
     })
+    chatRef.current?.focus()
   }
 
   const onCloseChat = (chat: Chat) => {
@@ -74,6 +75,8 @@ const Chat = () => {
     setChatList([...chatList])
     if (chatList.length && chat.id === currentChat?.id) {
       onChangeChat(chatList[0])
+    }else {
+      chatRef.current?.focus()
     }
   }
 
@@ -85,6 +88,7 @@ const Chat = () => {
       setCurrentChat(chat)
       const messages = messagesMap.current.get(chat.id!)
       chatRef.current?.setMessages(messages || [])
+      chatRef.current?.focus()
     }
   }
 

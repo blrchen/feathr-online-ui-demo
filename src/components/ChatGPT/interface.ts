@@ -59,6 +59,7 @@ export interface ChatGPInstance {
   setMessages: (messages: ChatMessage[]) => void
   getMessages: () => ChatMessage[]
   scrollDown: () => void
+  focus: () => void
 }
 
 export interface ChatConfig {
