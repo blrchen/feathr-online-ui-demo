@@ -173,6 +173,12 @@ export const useChatGPT = (props: ChatGPTProps, ref: any) => {
   }, [messages])
 
   useEffect(() => {
+    if (!loading) {
+      inputRef.current!.focus()
+    }
+  }, [loading])
+  
+  useEffect(() => {
     new ClipboardJS('.chat-wrapper .copy-btn')
   }, [])
 
