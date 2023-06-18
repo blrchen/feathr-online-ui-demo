@@ -245,8 +245,13 @@ export const GetEmbeddings = async (
       model
     })
   })
+
   const json = await res.json()
-  return json.data[0].embedding
+  if (json.error) {
+    throw json.error
+  } else {
+    return json.data[0].embedding
+  }
 }
 
 const SearchDocuments = async (vector: string, embedding: any) => {
