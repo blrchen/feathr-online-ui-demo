@@ -71,6 +71,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       prompts = []
       await DocQuestion(config, messages, doc)
     }
+
     const result = await Completions(config, messages, prompts)
     if (config.stream === false) {
       res.status(200).json(result)
@@ -78,7 +79,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       pipelineAsync(result as unknown as Readable, res)
     }
   } catch (error: any) {
-    res.status(500).json({ error: error.stack })
+    if (error.status >= 400 && error.status <= 500) {
+      res.status(error.status).json({ error: error.message })
+    } else {
+      res.status(500).json({ error: error.stack })
+    }
   }
 }
 
@@ -135,9 +140,10 @@ const OpenAIStream = async (
 
   if (res.status !== 200) {
     const statusText = res.statusText
-    throw new Error(
-      `The OpenAI API has encountered an error with a status code of ${res.status} and message ${statusText}`
-    )
+    throw {
+      message: `The OpenAI API has encountered an error with a status code of ${res.status} and message ${statusText}`,
+      status: res.status
+    }
   }
 
   return new ReadableStream({

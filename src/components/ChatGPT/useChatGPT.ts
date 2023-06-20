@@ -1,5 +1,5 @@
 import { useEffect, useImperativeHandle, useReducer, useRef, useState } from 'react'
-
+import { message } from 'antd'
 import ClipboardJS from 'clipboard'
 import { throttle } from 'lodash-es'
 
@@ -43,7 +43,8 @@ const requestMessage = async (
   }
 
   if (!response.ok) {
-    throw new Error(response.statusText)
+    const error = await response.json()
+    throw new Error(error.error)
   }
   const data = response.body
 
@@ -141,8 +142,10 @@ export const useChatGPT = (props: ChatGPTProps, ref: any) => {
         }
         archiveCurrentMessage()
       }
-    } catch (e) {
-      console.error(e)
+    } catch (e: any) {
+      if (e.ABORT_ERR !== 20) {
+        message.error(e.message)
+      }
       setLoading(false)
       return
     }
